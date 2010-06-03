@@ -1,0 +1,52 @@
+/* live */
+.tweet-wrapper {
+	    background: #E1EBFF;
+      font-family: Verdana;
+      font-size: 13px;
+      color: #111;
+      margin: 40px 0px;
+      line-height: 1.4;
+			padding: 5px;
+}
+
+.tweet-wrapper h2 {
+      margin-top: 40px;
+      font-family: Helvetica, Arial, sans-serif;
+      font-size: 24px;
+      font-weight: bold;
+			margin: 0;
+    }
+.tweet-wrapper a, .tweet-wrapper a:visited {
+      color: #066999;
+    }
+.tweet-wrapper a:hover {
+      color: #111;
+}
+
+.tweet {
+      background: #fff;
+      margin: 4px 0;
+      width: 610px;
+      padding: 8px;
+      -moz-border-radius: 8px;
+      -webkit-border-radius: 8px;
+    }
+    .tweet img {
+      float: left;
+      margin: 0 8px 4px 0;
+    }
+    .tweet .text {
+      margin: 0;
+    }
+    .tweet .time {
+      font-size: 80%;
+      color: #888;
+      white-space: nowrap;
+    }
+
+    #twitterSearch .tweet {
+      min-height: 24px;
+    }
+    #twitterSearch .tweet .text {
+      margin-left: 32px;
+    }
