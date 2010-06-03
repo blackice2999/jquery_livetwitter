@@ -1,17 +1,29 @@
 <?php
 /**
+ * $Id$
+ *
  * a simple module that provides two configurable blocks to display a twitter search api aka tweetwall
  */
 
-DEFINE('JQUERY_LIVETWITTER_LIB_PATH', 'jquery_livetwitter');
+DEFINE('JQUERY_LIVETWITTER_LIB_PATH', 'jquery.livetwitter');
 DEFINE('JQUERY_LIVETWITTER_LIB','jquery.livetwitter.js');
 
+
+/**
+ * hook_perm()
+ * provides two permissions for visibility
+ * view hashtag for live hashtag search block / theme function
+ * view user timeline for the user timeline block / theme function
+ */
 function jquery_livetwitter_perm() {
 	return array('view hashtag', 'view user timeline');
 } 
  
 /**
  * Implementation of hook_block().
+ * 
+ * we have two blocks, both blocks are seperatly configurable.
+ * The settings will be also used in the theme functions.
  *
  * @param $op What kind of information to retrieve about the block. Possible values: list, configure, save, view.
  * @param $delta Which block to return.
@@ -21,31 +33,33 @@ function jquery_livetwitter_block($op = 'list', $delta = 0, $edit = array()) {
 	switch ($op) {
 		case 'list':
 			$blocks['hashtag'] = array(
-        'info' => t('#hashtag live search'),
+        'info' => t('jQuery Livetwitter #hashtag search'),
 			);
 			
 			$blocks['user_timeline'] = array(
-				'info' => t('Twitter user timeline'),
+				'info' => t('jQuery Livetwitter user timeline'),
 			);
 			return $blocks;
 
 		case 'configure':
-			$form = array();
-
-			return $form;
+		  // @TODO: merge both forms to one...
+			if ($delta == 'hashtag') {
+				return _jquery_livetwitter_block_hashtag_settings();
+			}
+			return _jquery_livetwitter_block_user_timeline_settings();
 		case 'save':
+			_jquery_livetwitter_block_settings_save($delta, $edit);
 			return;
 
 		case 'view': default:
-		print_r($delta);
 			switch ($delta) {
 				case 'hashtag':
-					$block['subject'] = t('#hashtag live search');
-					$block['content'] = theme('jquery_livetwitter_hashtag');
+					$block['subject'] = t('jQuery Livetwitter #hashtag search');
+					$block['content'] = theme('jquery_livetwitter_block_hashtag');
 					break;
 			  case 'user_timeline':
-			  	$block['subject'] = t('Twitter user timeline');
-			  	$block['content'] = theme('jquery_livetwitter_user_timeline');
+			  	$block['subject'] = t('jQuery Livetwitter user timeline');
+			  	$block['content'] = theme('jquery_livetwitter_block_user_timeline');
 			  break;
 			}
 			return $block;
@@ -55,11 +69,24 @@ function jquery_livetwitter_block($op = 'list', $delta = 0, $edit = array()) {
 
 /**
  * hook_theme();
+ * we have three theme functions
+ * jquery_livetwitter_block_hashtag()
+ * provides the same as the hashtag block, its use the config from the block
+ * but you can override the settings with the settings array as parameter.
+ *
+ * jquery_livetwitter_block_user_timeline
+ * provides the same as the user_timeline block, its use the config from the block
+ * but you can override the settings with the settings array as parameter.
+ *
+ * jquery_livetwitter()
+ * provides the livetwitter output you must set a id and settings.
+ *
+ * for Details look at the theme_function self.
  */
  
 function jquery_livetwitter_theme() {
 	return array(
-		'jquery_livetwitter_block' => array(
+		'jquery_livetwitter' => array(
 			'arguments' => array(
 				'id' => NULL,
 				'settings' => NULL,
@@ -78,9 +105,22 @@ function jquery_livetwitter_theme() {
 	);
 }
 
-
+/**
+ * Provides the live twitter output and calls the javascript library,
+ * we have two parameters:
+ * 
+ * @param: $id (string) (required) - the id of the livetwitter element.
+ * it will be used for the div container element and the jquery plugin call.
+ *
+ * @param: $settings (array) (required) - a settings array which can contain the keys:
+ *  - limit (int) maximum tweets to show
+ *  - rate  (int) time in seconds for refresh
+ *  - showAuthor (boolean) true to display the Twitter Author of tweet
+ *  - mode (string) - hashtag or user_timeline
+ *  - query (string) - for hashtag use comma seperated list, username (only one) for user_timeline
+ * 
+ */
 function theme_jquery_livetwitter($id = NULL, $settings = NULL) {
-
 	if(!$id || !$settings) {
 		drupal_set_message(t('theme_jquery_livetwitter: no id or settings given'),'error');
 		return '';
@@ -100,35 +140,35 @@ function theme_jquery_livetwitter($id = NULL, $settings = NULL) {
 /**
  * Theme function to render the hashtag block with settings directly
  * Settings can be overriden with param:
- * @param : settings array()
+ * @param : settings array() - (for details show at theme_jquery_livetwitter)
  */
 function theme_jquery_livetwitter_block_hashtag($settings = NULL){
 	$settingsBlock = array();
 	
 	$settingsBlock = variable_get('jquery_livetwitter_block_hashtag', array(
 		'limit' => 10,
-		'rate'  => 10,
+		'rate'  => 10000,
 		'showAuthor' => TRUE,
 		'mode'			=> 'search',
 		'query' => 'drupal',
 	));
 	// merge settings from block config with own settings
 	$settings = is_array($settings) ? array_merge($settingsBlock, $settings) : $settingsBlock;
-	
+
 	return theme('jquery_livetwitter', 'jquery-live-twitter-hashtag', $settings);
 }
 
 /**
  * Theme function to render the user_timeline block with settings directly
  * Settings can be overriden with param:
- * @param : settings array()
+ * @param : settings array() - (for details show at theme_jquery_livetwitter)
  **/
 function theme_jquery_livetwitter_block_user_timeline($settings = NULL){
 	$settingsBlock = array();
 	
 	$settingsBlock = variable_get('jquery_livetwitter_block_user_timeline', array(
 		'limit' => 10,
-		'rate'  => 10,
+		'rate'  => 10000,
 		'showAuthor' => TRUE,
 		'mode'			=> 'user_timeline',
 		'query'			=> 'blackice2999', // must be extracted in init function...
@@ -137,6 +177,124 @@ function theme_jquery_livetwitter_block_user_timeline($settings = NULL){
 	$settings = is_array($settings) ? array_merge($settingsBlock, $settings) : $settingsBlock;
 	
 	return theme('jquery_livetwitter', 'jquery-live-twitter-user-timeline', $settings);
+}
+
+//@TODO: write comment, make VALIDATION of values !!!
+function _jquery_livetwitter_block_settings_save($delta = NULL, $edit = array()) {
+
+
+	$settings = array(
+		'limit' => (int)$edit['limit'],
+		'rate' => (int)$edit['rate'],
+		'showAuthor' => (int)$edit['showAuthor'],
+		'query' => $edit['query'],
+	);
+
+	switch ($delta) {
+		case 'hashtag':
+			variable_set('jquery_livetwitter_block_hashtag', $settings);
+		break;
+		
+		case 'user_timeline':
+			variable_set('jquery_livetwitter_block_user_timeline', $settings);
+		break;
+	}
+}
+
+/**
+ * Settingsform for Hashtag search block.
+ */
+function _jquery_livetwitter_block_hashtag_settings() {
+	$form = array();
+	
+	$oldSettings = variable_get('jquery_livetwitter_block_hashtag', array(
+		'limit' => 10,
+		'rate'  => 10000,
+		'showAuthor' => TRUE,
+		'mode'			=> 'search',
+		'query' => 'drupal',
+	));
+	
+	$form['jquery_livetwitter'] = array(
+		'#type' => 'fieldset',
+		'#title' => t('jQuery Livetwitter settings'),
+	);
+	
+	$form['jquery_livetwitter']['query'] = array(
+		'#type' => 'textfield',
+		'#title' => t('Hashtags'),
+		'#default_value' => $oldSettings['query'],
+	);
+	$form['jquery_livetwitter']['limit'] = array(
+		'#type' => 'textfield',
+		'#title' => t('item count'),
+		'#default_value' => $oldSettings['limit'],
+	);
+	$form['jquery_livetwitter']['rate'] = array(
+		'#type' => 'textfield',
+		'#title' => 'Update rate (s)',
+		'#default_value' => $oldSettings['rate'],
+	);
+
+	$form['jquery_livetwitter']['showAuthor'] = array(
+		'#type' => 'select',
+		'#title' => t('Show Author?'),
+		'#options' => array(
+			FALSE => 'hide',
+			TRUE => 'show',
+		),
+		'#default_value' => $oldSettings['showAuthor'],
+	);
+	
+	return $form;
+}
+
+/**
+ * Settingsform for User timeline block.
+ */
+function _jquery_livetwitter_block_user_timeline_settings() {
+	$form = array();
+	
+	$oldSettings = variable_get('jquery_livetwitter_block_user_timeline', array(
+		'limit' => 10,
+		'rate'  => 10000,
+		'showAuthor' => TRUE,
+		'mode'			=> 'user_timeline',
+		'query' => 'blackice2999',
+	));
+	
+	$form['jquery_livetwitter'] = array(
+		'#type' => 'fieldset',
+		'#title' => t('jQuery Livetwitter settings'),
+	);
+	
+	$form['jquery_livetwitter']['query'] = array(
+		'#type' => 'textfield',
+		'#title' => t('Twitter username'),
+		'#default_value' => $oldSettings['query'],
+	);
+	$form['jquery_livetwitter']['limit'] = array(
+		'#type' => 'textfield',
+		'#title' => t('item count'),
+		'#default_value' => $oldSettings['limit'],
+	);
+	$form['jquery_livetwitter']['rate'] = array(
+		'#type' => 'textfield',
+		'#title' => 'Update rate (s)',
+		'#default_value' => $oldSettings['rate'],
+	);
+
+	$form['jquery_livetwitter']['showAuthor'] = array(
+		'#type' => 'select',
+		'#title' => t('Show Author?'),
+		'#options' => array(
+			FALSE => 'hide',
+			TRUE => 'show',
+		),
+		'#default_value' => $oldSettings['showAuthor'],
+	);
+	
+	return $form;
 }
 
 /**
@@ -148,6 +306,7 @@ function _jquery_livetwitter_init($id = NULL, $settings = NULL) {
 	static $libAdded = FALSE;
 
 	// check if library exists and include them
+	// @TODO: need other check to search the library (what is the drupal way for it...?)
 	$jquery_lib = 'sites/all/libraries' . '/' . JQUERY_LIVETWITTER_LIB_PATH . '/' . JQUERY_LIVETWITTER_LIB;
 	if(!file_exists($jquery_lib)) {
 		drupal_set_message(t('cant find jquery_livetwitter libraries please install it in sites/all/libraries/jquery_livetwitter'), 'error');
@@ -161,7 +320,6 @@ function _jquery_livetwitter_init($id = NULL, $settings = NULL) {
 		return FALSE;
 	}
 	unset($settings['query']);
-	
 	if (!isset($settings_added[$id])) {
 		drupal_add_js(
 			array(
@@ -181,6 +339,8 @@ function _jquery_livetwitter_init($id = NULL, $settings = NULL) {
 	  drupal_add_js(drupal_get_path('module', 'jquery_livetwitter') . '/jquery_livetwitter.init.js');
 	  drupal_add_css(drupal_get_path('module', 'jquery_livetwitter') . '/jquery_livetwitter.css');
   	$libAdded = TRUE;
-  }	
+  }
+  
+  return true;	
 		
 }
