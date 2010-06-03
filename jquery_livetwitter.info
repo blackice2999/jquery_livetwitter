@@ -1,6 +1,6 @@
 ; $Id$
-name = Twitter Search
-description = Implements Twitter Live Search for User & Hashtags
+name = jQuery Livetwitter
+description = provides two livetwitter blocks
 core = 6.x
 package = twitter
 ; Information added by drupal.org packaging script on 2010-05-20

@@ -37,6 +37,7 @@ function jquery_livetwitter_block($op = 'list', $delta = 0, $edit = array()) {
 			return;
 
 		case 'view': default:
+		print_r($delta);
 			switch ($delta) {
 				case 'hashtag':
 					$block['subject'] = t('#hashtag live search');
