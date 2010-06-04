@@ -1,9 +1,0 @@
-; // $Id$
-name = jQuery Livetwitter
-description = provides two livetwitter blocks
-core = 6.x
-package = twitter
-version = "6.x-1.00"
-core = "6.x"
-project = "jquery_livetwitter"
-
