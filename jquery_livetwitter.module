@@ -122,13 +122,13 @@ function jquery_livetwitter_theme() {
  * 
  */
 function theme_jquery_livetwitter($id = NULL, $settings = NULL) {
-  if( !$id || !$settings ) {
+  if ( !$id || !$settings ) {
     drupal_set_message( t('theme_jquery_livetwitter: no id or settings given'), 'error' );
     return '';
   }
   
   // init lib & settings
-  if( !_jquery_livetwitter_init( $id, $settings ) ) {
+  if ( !_jquery_livetwitter_init( $id, $settings ) ) {
     return '';
   }
 
@@ -309,14 +309,14 @@ function _jquery_livetwitter_init($id = NULL, $settings = NULL) {
   // check if library exists and include them
   // @TODO: need other check to search the library (what is the drupal way for it...?)
   $jquery_lib = 'sites/all/libraries' . '/' . JQUERY_LIVETWITTER_LIB_PATH . '/' . JQUERY_LIVETWITTER_LIB;
-  if( !file_exists($jquery_lib) ) {
+  if ( !file_exists($jquery_lib) ) {
     drupal_set_message(t('cant find jquery_livetwitter libraries please install it in sites/all/libraries/jquery_livetwitter'), 'error');
     return FALSE;
   }
   
   // @TODO: we need to extract the query from settings array and remove it from settings array
   $query = array_key_exists('query', $settings) ? $settings['query'] : FALSE;
-  if( !$query ) {
+  if ( !$query ) {
     drupal_set_message( t('no query given in jquery_livetwitter'), 'error' );
     return FALSE;
   }
