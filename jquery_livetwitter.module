@@ -9,6 +9,7 @@
  * @TODO: finish permission checking
  * @TODO: do form validation
  * @TODO: dont split the settings form.. make it simpler blackice
+ * @TODO: need to modify the jquery.livetwitter library so we can search for multiple hashtags
  */
 
 DEFINE('JQUERY_LIVETWITTER_LIB_PATH', 'jquery.livetwitter');
@@ -190,10 +191,10 @@ function _jquery_livetwitter_block_settings_save($delta = NULL, $edit = array())
 
 
   $settings = array(
-    'limit' => (int)$edit['limit'],
-    'rate' => (int)$edit['rate'],
+    'limit' => (int)check_plain($edit['limit']),
+    'rate' => (int)check_plain($edit['rate']),
     'showAuthor' => (int)$edit['showAuthor'],
-    'query' => $edit['query'],
+    'query' => check_plain($edit['query']),
   );
 
   switch ($delta) {
@@ -325,7 +326,10 @@ function _jquery_livetwitter_init($id = NULL, $settings = NULL) {
     drupal_set_message( t('no query given in jquery_livetwitter'), 'error' );
     return FALSE;
   }
+  
+  
   unset($settings['query']);
+  
   if (!isset($settings_added[$id])) {
     drupal_add_js(
       array(
