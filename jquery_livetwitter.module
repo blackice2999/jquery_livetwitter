@@ -128,7 +128,7 @@ function theme_jquery_livetwitter($id = NULL, $settings = NULL) {
   }
   
   // init lib & settings
-  if( !_jquery_livetwitter_init($id, $settings) ) {
+  if( !_jquery_livetwitter_init( $id, $settings ) ) {
     return '';
   }
 
