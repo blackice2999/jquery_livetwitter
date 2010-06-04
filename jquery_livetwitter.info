@@ -1,10 +1,9 @@
-; $Id$
+; // $Id$
 name = jQuery Livetwitter
 description = provides two livetwitter blocks
 core = 6.x
 package = twitter
-; Information added by drupal.org packaging script on 2010-05-20
-version = "6.x-1.0"
+version = "6.x-1.00"
 core = "6.x"
 project = "jquery_livetwitter"
 

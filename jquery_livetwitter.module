@@ -1,6 +1,7 @@
 <?php
+// $Id$
+
 /**
- * $Id$
  *
  * a simple module that provides two configurable blocks to display a twitter search api aka tweetwall
  */

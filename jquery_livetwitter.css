@@ -1,24 +1,24 @@
-/* live */
-.tweet {
-      margin: 4px 0;
-      padding: 8px;
-    }
-    .tweet img {
-      float: left;
-      margin: 0 8px 4px 0;
-    }
-    .tweet .text {
-      margin: 0;
-    }
-    .tweet .time {
-      font-size: 80%;
-      color: #888;
-      white-space: nowrap;
-    }
+/* // $Id$ */
 
-    .tweets .tweet {
-      min-height: 24px;
-    }
-    .tweets .tweet .text {
-      margin-left: 32px;
-    }
+.tweets .tweet {
+  margin: 4px 0;
+  padding: 8px;
+}
+.tweets .tweet img {
+  float: left;
+  margin: 0 8px 4px 0;
+}
+.tweets .tweet .text {
+  margin: 0;
+}
+.tweets .tweet .time {
+  font-size: 80%;
+  white-space: nowrap;
+}
+
+.tweets .tweet {
+  min-height: 24px;
+}
+.tweets .tweet .text {
+  margin-left: 32px;
+}
